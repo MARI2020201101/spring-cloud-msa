@@ -2,7 +2,9 @@ package com.mariworld.userservice.vo;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class UserDto {
@@ -13,4 +15,6 @@ public class UserDto {
     private String userId;
     private Date createdAt;
     private String encryptedPwd;
+
+    private List<ResponseOrder> orders = new ArrayList<>();
 }

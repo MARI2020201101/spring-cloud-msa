@@ -1,24 +1,32 @@
-package com.mariworld.userservice.vo;
+package com.mariworld.orderservice.vo;
 
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Table(name = "orders")
 @Data
-@Table(name="users")
-public class UserEntity {
-
+public class OrderEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String email;
-    private String pwd;
+
+    private String productId;
+
+    private Integer qty;
+
+    private Integer unitPrice;
+
+    private Integer totalPrice;
+
     private String userId;
-    private String encryptedPwd;
+
+    private String orderId;
+
     @ColumnDefault(value = "CURRENT_TIMESTAMP")
     private Date createdAt;
 }

@@ -1,4 +1,4 @@
-package com.mariworld.userservice.vo;
+package com.mariworld.catalogservice.vo;
 
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
@@ -8,17 +8,20 @@ import java.util.Date;
 
 @Entity
 @Data
-@Table(name="users")
-public class UserEntity {
-
+@Table(name = "catalog")
+public class CatalogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String email;
-    private String pwd;
-    private String userId;
-    private String encryptedPwd;
+
+    private String productId;
+
+    private String productName;
+
+    private Integer stock;
+
+    private Integer unitPrice;
+
     @ColumnDefault(value = "CURRENT_TIMESTAMP")
     private Date createdAt;
 }

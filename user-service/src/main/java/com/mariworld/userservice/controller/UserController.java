@@ -1,22 +1,21 @@
 package com.mariworld.userservice.controller;
 
 import com.mariworld.userservice.service.UserService;
-import com.mariworld.userservice.vo.Greeting;
-import com.mariworld.userservice.vo.RequestUser;
-import com.mariworld.userservice.vo.ResponseUser;
-import com.mariworld.userservice.vo.UserDto;
+import com.mariworld.userservice.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@RequestMapping("/")
+@RequestMapping("/user-service")
 @Slf4j
 public class UserController {
 
@@ -32,7 +31,8 @@ public class UserController {
 
     @GetMapping("/health_check")
     public String healthCheck(){
-        return "health check in working user service!";
+        return String.format("health check in working user service! : port -> %s",
+                env.getProperty("local.server.port"));
     }
 
     @GetMapping("/welcome")
@@ -46,8 +46,26 @@ public class UserController {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserDto userDto = mapper.map(user, UserDto.class);
-        userService.createUser(userDto);
+        UserDto createdUser = userService.createUser(userDto);
+        ResponseUser responseUser = mapper.map(createdUser, ResponseUser.class);
+        return new ResponseEntity<>(responseUser,HttpStatus.CREATED);
+//        return "new user created from user service";
 
-        return "new user created from user service";
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ResponseUser> getUserByUserId(@PathVariable("userId") String userId){
+        UserDto userDto = userService.getUserByUserId(userId);
+        ResponseUser user = new ModelMapper().map(userDto, ResponseUser.class);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<ResponseUser>> getUsers(){
+        Iterable<UserEntity> userEntities = userService.getUserByAll();
+        List<ResponseUser> users = new ArrayList<>();
+        ModelMapper mapper = new ModelMapper();
+        userEntities.forEach(u-> users.add(mapper.map(u, ResponseUser.class)));
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 }
