@@ -8,4 +8,5 @@ spring:
     config:
       server:
         git:
-          uri: file://C:/spring-study/spring-cloud-msa-config
+#          uri: file://C:/spring-study/spring-cloud-msa-config
+          uri: https://github.com/MARI2020201101/spring-cloud-msa-config.git
