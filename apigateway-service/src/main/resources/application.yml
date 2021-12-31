@@ -23,7 +23,14 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
+            - Path=/user-service/actuator/**
+          filters:
+            - RewritePath=/user-service(?<segment>/?.*), $\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
             - Path=/user-service/**
+
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
@@ -53,3 +60,9 @@ spring:
                 baseMessage: Spring cloud gateway log!!
                 preFilter: true
                 postFilter: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace
