@@ -37,3 +37,7 @@ management:
     web:
       exposure:
         include: refresh, health, beans, busrefresh
+
+logging:
+  level:
+    com.mariworld.userservice.client: DEBUG

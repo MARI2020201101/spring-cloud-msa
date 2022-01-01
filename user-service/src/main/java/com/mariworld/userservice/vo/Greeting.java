@@ -11,6 +11,6 @@ public class Greeting {
     @Value("${greeting.message}")
     private String message;
 
-//    @Value("${service.message}")
-//    private String serviceMsg;
+    @Value("${service.message}")
+    private String serviceMsg;
 }

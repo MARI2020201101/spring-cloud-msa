@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/welcome")
     public String welcome(){
 //        return env.getProperty("greeting.message");
-        return greeting.getMessage();
+        return greeting.getMessage() + "\n" + greeting.getServiceMsg();
     }
     
     @PostMapping("/users")
@@ -58,6 +58,20 @@ public class UserController {
     @GetMapping("/users/{userId}")
     public ResponseEntity<ResponseUser> getUserByUserId(@PathVariable("userId") String userId){
         UserDto userDto = userService.getUserByUserId(userId);
+        ResponseUser user = new ModelMapper().map(userDto, ResponseUser.class);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/users/v2/{userId}")
+    public ResponseEntity<ResponseUser> getUserByUserIdV2(@PathVariable("userId") String userId){
+        UserDto userDto = userService.getUserByUserIdV2(userId);
+        ResponseUser user = new ModelMapper().map(userDto, ResponseUser.class);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/users/exception/{userId}")
+    public ResponseEntity<ResponseUser> getUserByUserIdException(@PathVariable("userId") String userId){
+        UserDto userDto = userService.getUserByUserIdException(userId);
         ResponseUser user = new ModelMapper().map(userDto, ResponseUser.class);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
