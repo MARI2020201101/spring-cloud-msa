@@ -32,9 +32,9 @@ public class UserController {
     @GetMapping("/health_check")
     public String healthCheck(){
         return String.format("health check in working user service! : port -> %s \n" +
-                        "spring config property hello -> %s",
+                        "spring config service message -> %s",
                 env.getProperty("local.server.port"),
-                env.getProperty("hello"));
+                env.getProperty("service.message"));
     }
 
     @GetMapping("/welcome")
