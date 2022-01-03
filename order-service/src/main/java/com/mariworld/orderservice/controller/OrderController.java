@@ -6,6 +6,7 @@ import com.mariworld.orderservice.vo.OrderEntity;
 import com.mariworld.orderservice.vo.RequestOrder;
 import com.mariworld.orderservice.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/order-service")
+@Slf4j
 public class OrderController {
 
     private final Environment env;
@@ -58,6 +60,7 @@ public class OrderController {
 
     @GetMapping("/{user-id}/orders")
     public ResponseEntity<List<ResponseOrder>> findAllByUserId(@PathVariable("user-id") String userId){
+        log.info("before controller findAllByUserId");
         Iterable<OrderEntity> orderEntities = orderService.getOrdersByUserId(userId);
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -65,6 +68,7 @@ public class OrderController {
         orderEntities.forEach(o->
                 orderList.add(modelMapper.map(o,ResponseOrder.class))
                 );
+        log.info("after controller findAllByUserId");
         return ResponseEntity.status(HttpStatus.OK).body(orderList);
     }
 

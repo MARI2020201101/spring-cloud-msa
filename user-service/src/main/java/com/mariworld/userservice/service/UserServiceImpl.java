@@ -91,6 +91,21 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public UserDto getUserByUserIdV4(String userId) {
+        log.info("before service getUserByUserIdV4");
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if(userEntity==null) throw new UsernameNotFoundException("non exist user...");
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+        List<ResponseOrder> orders = circuitBreaker.run(()->orderServiceClient.getOrders(userId)
+                , f -> Collections.emptyList());
+        userDto.setOrders(orders);
+        log.info("after service getUserByUserIdV4");
+        return userDto;
+    }
+
+    @Override
     public UserDto getUserByUserIdException(String userId) {
         UserEntity userEntity = userRepository.findByUserId(userId);
         if(userEntity==null) throw new UsernameNotFoundException("non exist user...");
