@@ -44,6 +44,18 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
     }
 
+    @PostMapping("/{user-id}/v2/orders")
+    public ResponseEntity<ResponseOrder> createOrderV2(@PathVariable("user-id") String userId,
+                                                     @RequestBody RequestOrder requestOrder){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderDto orderDto = modelMapper.map(requestOrder, OrderDto.class);
+        orderDto.setUserId(userId);
+        OrderDto order = orderService.createOrderWithKafka(orderDto);
+        ResponseOrder responseOrder = modelMapper.map(order, ResponseOrder.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
+    }
+
     @GetMapping("/{user-id}/orders")
     public ResponseEntity<List<ResponseOrder>> findAllByUserId(@PathVariable("user-id") String userId){
         Iterable<OrderEntity> orderEntities = orderService.getOrdersByUserId(userId);

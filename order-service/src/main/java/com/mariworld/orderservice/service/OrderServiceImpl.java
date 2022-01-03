@@ -1,6 +1,7 @@
 package com.mariworld.orderservice.service;
 
 import com.mariworld.orderservice.jpa.OrderRepository;
+import com.mariworld.orderservice.messagequeue.KafkaProducer;
 import com.mariworld.orderservice.vo.OrderDto;
 import com.mariworld.orderservice.vo.OrderEntity;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
+    private final KafkaProducer kafkaProducer;
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         orderDto.setOrderId(UUID.randomUUID().toString());
@@ -22,6 +24,21 @@ public class OrderServiceImpl implements OrderService{
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderEntity orderEntity = modelMapper.map(orderDto, OrderEntity.class);
         OrderEntity save = orderRepository.save(orderEntity);
+        OrderDto returendOrder = modelMapper.map(save, OrderDto.class);
+        return returendOrder;
+    }
+
+    @Override
+    public OrderDto createOrderWithKafka(OrderDto orderDto) {
+        orderDto.setOrderId(UUID.randomUUID().toString());
+        orderDto.setTotalPrice(orderDto.getUnitPrice()*orderDto.getQty());
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderEntity orderEntity = modelMapper.map(orderDto, OrderEntity.class);
+        OrderEntity save = orderRepository.save(orderEntity);
+
+        kafkaProducer.send("example-catalog-topic" , orderDto);
+
         OrderDto returendOrder = modelMapper.map(save, OrderDto.class);
         return returendOrder;
     }

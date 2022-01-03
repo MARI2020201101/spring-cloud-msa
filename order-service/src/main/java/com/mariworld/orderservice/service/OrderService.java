@@ -5,6 +5,8 @@ import com.mariworld.orderservice.vo.OrderEntity;
 
 public interface OrderService {
     OrderDto createOrder(OrderDto orderDetails);
+    OrderDto createOrderWithKafka(OrderDto orderDetails);
+
     OrderDto getOrderByOrderId(String orderId);
     Iterable<OrderEntity> getOrdersByUserId(String userId);
 
