@@ -5,11 +5,12 @@ import com.mariworld.userservice.jpa.UserRepository;
 import com.mariworld.userservice.vo.ResponseOrder;
 import com.mariworld.userservice.vo.UserDto;
 import com.mariworld.userservice.vo.UserEntity;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -19,7 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +34,8 @@ public class UserServiceImpl implements UserService{
     private final Environment env;
     private final RestTemplate restTemplate;
     private final OrderServiceClient orderServiceClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
+
     @Override
     public UserDto createUser(UserDto userDto) {
         userDto.setUserId(UUID.randomUUID().toString());
@@ -68,7 +71,21 @@ public class UserServiceImpl implements UserService{
         if(userEntity==null) throw new UsernameNotFoundException("non exist user...");
         UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
 
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("order-circuit");
         List<ResponseOrder> orders = orderServiceClient.getOrders(userId);
+        userDto.setOrders(orders);
+        return userDto;
+    }
+
+    @Override
+    public UserDto getUserByUserIdV3(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if(userEntity==null) throw new UsernameNotFoundException("non exist user...");
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+        List<ResponseOrder> orders = circuitBreaker.run(()->orderServiceClient.getOrders(userId)
+                , f -> Collections.emptyList());
         userDto.setOrders(orders);
         return userDto;
     }

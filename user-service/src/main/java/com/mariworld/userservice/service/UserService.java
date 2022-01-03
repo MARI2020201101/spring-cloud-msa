@@ -8,6 +8,7 @@ public interface UserService {
     UserDto createUser(UserDto userDto);
     UserDto getUserByUserId(String userId);
     UserDto getUserByUserIdV2(String userId);
+    UserDto getUserByUserIdV3(String userId);
     UserDto getUserByUserIdException(String userId);
     Iterable<UserEntity> getUserByAll();
 }

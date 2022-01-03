@@ -69,6 +69,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @GetMapping("/users/v3/{userId}")
+    public ResponseEntity<ResponseUser> getUserByUserIdV3(@PathVariable("userId") String userId){
+        UserDto userDto = userService.getUserByUserIdV3(userId);
+        ResponseUser user = new ModelMapper().map(userDto, ResponseUser.class);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
     @GetMapping("/users/exception/{userId}")
     public ResponseEntity<ResponseUser> getUserByUserIdException(@PathVariable("userId") String userId){
         UserDto userDto = userService.getUserByUserIdException(userId);
