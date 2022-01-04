@@ -1,5 +1,6 @@
 package com.mariworld.authservice.service;
 
+import com.mariworld.authservice.vo.RequestAuth;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,4 +25,12 @@ public class AuthServiceTest {
 //    public void encryptTestV2() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 //        authService.encryptPwdV2("first-service");
 //    }
+
+    @Test
+    public void verifyTest() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        RequestAuth requestAuth = new RequestAuth();
+        requestAuth.setServiceId("first-service");
+        requestAuth.setPwd("first-service");
+        authService.verify(requestAuth);
+    }
 }

@@ -23,7 +23,10 @@ public class AuthController {
 
     private final AuthService authService;
     @GetMapping("/verify")
-    public ResponseEntity<ResponseAuth> verify(@RequestBody RequestAuth requestAuth){
+    public ResponseEntity<ResponseAuth> verify(@RequestBody RequestAuth requestAuth) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        authService.verify(requestAuth);
 
+
+        return null;
     }
 }
