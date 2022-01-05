@@ -1,5 +1,6 @@
 package com.mariworld.authservice.service;
 
+import aj.org.objectweb.asm.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
@@ -36,16 +37,14 @@ public class AuthService {
     public ResponseAuth verify(RequestAuth requsetAuth) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         AuthEntity authEntity = authRepository.findByServiceId(requsetAuth.getServiceId());
         String requestPwd = encryptWithBase64(requsetAuth.getPwd());
-
-
         if(requestPwd.equals(authEntity.getPwd())){
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 GsonBuilder builder = new GsonBuilder();
                 builder.setPrettyPrinting();
                 Gson gson = builder.create();
-                TypeToken<Set<ResponseAuth.Role>> roleSet = gson.fromJson(authEntity.getRoles(), new TypeToken<Set<ResponseAuth.Role>>() {
-                }.getClass());
+
+              Set<ResponseAuth.Role> roleSet = gson.fromJson(authEntity.getRoles(), new TypeToken<Set<ResponseAuth.Role>>(){}.getType());
                 log.info(roleSet.toString());
             } catch (Exception e) {
                 e.printStackTrace();
